@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visualización de Terremotos</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" /> <!-- Leaflet CSS -->
+    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!-- Chart.js -->
+</head>
+<body>
+    <div class="container">
+        <h1>Visualización de Terremotos</h1>
+        
+        <!-- Sección de Propósito -->
+        <div class="purpose">
+            <p>Este dashboard fue creado para proporcionar una visualización interactiva de los datos de terremotos 
+            a nivel mundial. Permite explorar información detallada como magnitud, ubicación y tendencias a lo 
+            largo del tiempo, ayudando a identificar patrones y analizar la frecuencia e impacto de estos eventos.</p>
+        </div>
+
+        <!-- Sección de Filtros -->
+        <div class="filters">
+            <h2>Filtros</h2>
+            <form id="filter-form">
+                <label for="start-date">Fecha de Inicio:</label>
+                <input type="date" id="start-date" name="start-date">
+
+                <label for="end-date">Fecha de Fin:</label>
+                <input type="date" id="end-date" name="end-date">
+
+                <label for="country">País/Estado:</label>
+                <select id="country" name="country">
+                    <option value="all">Todos</option>
+                    <!-- Opciones dinámicas cargadas desde el backend -->
+                </select>
+
+                <label for="min-magnitude">Magnitud Mínima:</label>
+                <input type="number" id="min-magnitude" name="min-magnitude" placeholder="Min">
+
+                <label for="max-magnitude">Magnitud Máxima:</label>
+                <input type="number" id="max-magnitude" name="max-magnitude" placeholder="Max">
+
+                <button type="submit">Aplicar Filtros</button>
+            </form>
+        </div>
+
+        <!-- Sección de Gráficos -->
+        <div class="charts">
+            <h2>Gráficas de Terremotos</h2>
+
+            <div class="chart-container">
+                <h3>Magnitud a lo Largo del Tiempo</h3>
+                <canvas id="magnitudeTimeChart"></canvas>
+            </div>
+
+            <div class="chart-container">
+                <h3>Cantidad de Terremotos por País/Estado</h3>
+                <canvas id="earthquakeByCountryChart"></canvas>
+            </div>
+
+            <div class="chart-container">
+                <h3>Mapa de Ubicación de Terremotos</h3>
+                <!-- Mapa interactivo usando Leaflet -->
+                <div id="earthquakeMap" style="height: 400px;"></div>
+            </div>
+
+            <div class="chart-container">
+                <h3>Distribución de Profundidad de Terremotos</h3>
+                <canvas id="depthHistogramChart"></canvas>
+            </div>
+
+            <div class="chart-container">
+                <h3>Profundidad vs. Magnitud</h3>
+                <canvas id="depthMagnitudeScatterChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Sección de Resultados y Estadísticas -->
+        <section class="data-section">
+            <h2>Resultados</h2>
+            <div id="earthquake-data"></div>
+        </section>
+
+        <section class="statistics-section">
+            <h2>Estadísticas de Magnitud</h2>
+            <button onclick="fetchMagnitudeStats()">Ver Estadísticas</button>
+            <div id="statistics-data"></div>
+        </section>
+    </div>
+
+    <!-- Scripts para Leaflet y el archivo personalizado -->
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script> <!-- Leaflet JS -->
+    <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
+</body>
+</html>
