@@ -1,5 +1,7 @@
 # Lab_DB
 
+Para la coenxión a la base datos debe cambiar el nombre del servidor al suyo en el archivo config.py
+
 Para la creación de la Base de Datos y la tabla:
 
 CREATE DATABASE Earthquakes
