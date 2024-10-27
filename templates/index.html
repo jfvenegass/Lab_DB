@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,89 +10,119 @@
     <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!-- Chart.js -->
 </head>
+
 <body>
-    <div class="container">
-        <h1>Visualización de Terremotos</h1>
-        
-        <!-- Sección de Propósito -->
+    <header class="header">
+        <div class="header-content">
+            <h1>Visualización de Terremotos</h1>
+            <nav>
+                <ul class="nav-tabs">
+                    <li><button class="tab-button active" data-tab="map">Mapa de Ubicaciones</button></li>
+                    <li><button class="tab-button" data-tab="magnitude">Magnitud vs Tiempo</button></li>
+                    <li><button class="tab-button" data-tab="distribution">Distribución por País</button></li>
+                    <li><button class="tab-button" data-tab="depth">Análisis de Profundidad</button></li>
+                    <li><button class="tab-button" data-tab="scatter">Profundidad vs Magnitud</button></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main-content">
         <div class="purpose">
-            <p>Este dashboard fue creado para proporcionar una visualización interactiva de los datos de terremotos 
-            a nivel mundial. Permite explorar información detallada como magnitud, ubicación y tendencias a lo 
-            largo del tiempo, ayudando a identificar patrones y analizar la frecuencia e impacto de estos eventos.</p>
+            <p>Este dashboard fue creado para proporcionar una visualización interactiva de los datos de terremotos
+                a nivel mundial. Permite explorar información detallada como magnitud, ubicación y tendencias a lo
+                largo del tiempo, ayudando a identificar patrones y analizar la frecuencia e impacto de estos eventos.
+            </p>
         </div>
 
-        <!-- Sección de Filtros -->
         <div class="filters">
-            <h2>Filtros</h2>
             <form id="filter-form">
-                <label for="start-date">Fecha de Inicio:</label>
-                <input type="date" id="start-date" name="start-date">
-
-                <label for="end-date">Fecha de Fin:</label>
-                <input type="date" id="end-date" name="end-date">
-
-                <label for="country">País/Estado:</label>
-                <select id="country" name="country">
-                    <option value="all">Todos</option>
-                    <!-- Opciones dinámicas cargadas desde el backend -->
-                </select>
-
-                <label for="min-magnitude">Magnitud Mínima:</label>
-                <input type="number" id="min-magnitude" name="min-magnitude" placeholder="Min">
-
-                <label for="max-magnitude">Magnitud Máxima:</label>
-                <input type="number" id="max-magnitude" name="max-magnitude" placeholder="Max">
-
-                <button type="submit">Aplicar Filtros</button>
+                <div>
+                    <label for="start-date">Fecha de Inicio:</label>
+                    <input type="date" id="start-date" name="start-date">
+                </div>
+                <div>
+                    <label for="end-date">Fecha de Fin:</label>
+                    <input type="date" id="end-date" name="end-date">
+                </div>
+                <div>
+                    <label for="country">País/Estado:</label>
+                    <select id="country" name="country">
+                        <option value="all">Todos</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="min-magnitude">Magnitud Mínima:</label>
+                    <input type="number" id="min-magnitude" name="min-magnitude" placeholder="Min">
+                </div>
+                <div>
+                    <label for="max-magnitude">Magnitud Máxima:</label>
+                    <input type="number" id="max-magnitude" name="max-magnitude" placeholder="Max">
+                </div>
+                <div>
+                    <button type="submit">Aplicar Filtros</button>
+                </div>
             </form>
         </div>
 
-        <!-- Sección de Gráficos -->
-        <div class="charts">
-            <h2>Gráficas de Terremotos</h2>
-
-            <div class="chart-container">
-                <h3>Magnitud a lo Largo del Tiempo</h3>
-                <canvas id="magnitudeTimeChart"></canvas>
-            </div>
-
-            <div class="chart-container">
-                <h3>Cantidad de Terremotos por País/Estado</h3>
-                <canvas id="earthquakeByCountryChart"></canvas>
-            </div>
-
-            <div class="chart-container">
-                <h3>Mapa de Ubicación de Terremotos</h3>
-                <!-- Mapa interactivo usando Leaflet -->
-                <div id="earthquakeMap" style="height: 400px;"></div>
-            </div>
-
-            <div class="chart-container">
-                <h3>Distribución de Profundidad de Terremotos</h3>
-                <canvas id="depthHistogramChart"></canvas>
-            </div>
-
-            <div class="chart-container">
-                <h3>Profundidad vs. Magnitud</h3>
-                <canvas id="depthMagnitudeScatterChart"></canvas>
-            </div>
+        <div id="map-section" class="chart-section active">
+            <div id="earthquakeMap" class="chart-container"></div>
         </div>
 
-        <!-- Sección de Resultados y Estadísticas -->
-        <section class="data-section">
-            <h2>Resultados</h2>
-            <div id="earthquake-data"></div>
-        </section>
+        <div id="magnitude-section" class="chart-section">
+            <canvas id="magnitudeTimeChart" class="chart-container"></canvas>
+        </div>
 
-        <section class="statistics-section">
+        <div id="distribution-section" class="chart-section">
+            <canvas id="earthquakeByCountryChart" class="chart-container"></canvas>
+        </div>
+
+        <div id="depth-section" class="chart-section">
+            <canvas id="depthHistogramChart" class="chart-container"></canvas>
+        </div>
+
+        <div id="scatter-section" class="chart-section">
+            <canvas id="depthMagnitudeScatterChart" class="chart-container"></canvas>
+        </div>
+
+        <div class="statistics-section">
             <h2>Estadísticas de Magnitud</h2>
             <button onclick="fetchMagnitudeStats()">Ver Estadísticas</button>
             <div id="statistics-data"></div>
-        </section>
-    </div>
+        </div>
+    </main>
+
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script src="script.js"></script>
 
     <!-- Scripts para Leaflet y el archivo personalizado -->
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script> <!-- Leaflet JS -->
     <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
 </body>
+
 </html>
+<script>
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const tabButtons = document.querySelectorAll('.tab-button');
+        const chartSections = document.querySelectorAll('.chart-section');
+
+        tabButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                // Remover clase active de todos los botones y secciones
+                tabButtons.forEach(btn => btn.classList.remove('active'));
+                chartSections.forEach(section => section.classList.remove('active'));
+
+                // Agregar clase active al botón clickeado y su sección correspondiente
+                button.classList.add('active');
+                const tabId = button.getAttribute('data-tab');
+                document.getElementById(`${tabId}-section`).classList.add('active');
+            });
+        });
+
+        // Inicializar los charts y cargar datos
+        initializeCharts();
+        loadStateOptions();
+    });
+
+</script>
