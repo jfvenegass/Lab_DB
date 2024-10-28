@@ -124,10 +124,9 @@ function fetchEarthquakeData(startDate, endDate, country, minMagnitude, maxMagni
     .then(data => {
         updateMagnitudeTimeChart(data);
         updateEarthquakeByCountryChart(data);
-        updateTimeAnalysisChart(data); // Actualiza el histograma de tiempo
-        updateMagnitudeVsTimeScatterChart(data); // Actualiza el gráfico de magnitud vs tiempo
+        updateTimeAnalysisChart(data); 
+        updateMagnitudeVsTimeScatterChart(data); 
         updateMap(data);
-        displayResults(data);
     })
     .catch(error => console.error("Error:", error));
 }
@@ -157,16 +156,6 @@ function fetchMagnitudeStats() {
             document.getElementById("statistics-data").innerHTML = output;
         })
         .catch(error => console.error("Error:", error));
-}
-
-
-function displayResults(data) {
-    let output = "<ul>";
-    data.forEach(item => {
-        output += `<li>${item.date} - Magnitud: ${item.magnitude} - Lugar: ${item.place}</li>`;
-    });
-    output += "</ul>";
-    document.getElementById("earthquake-data").innerHTML = output;
 }
 
 function updateMagnitudeTimeChart(data) {
@@ -205,7 +194,7 @@ function updateDepthMagnitudeScatterChart(data) {
 }
 
 function updateMap(data) {
-    // Inicializa el mapa solo si no ha sido creado previamente
+    // Inicializamos el mapa solo si no ha sido creado previamente
     if (!map) {
         map = L.map('earthquakeMap').setView([0, 0], 2);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -213,14 +202,14 @@ function updateMap(data) {
         }).addTo(map);
     }
 
-    // Elimina cualquier marcador previo para evitar duplicaciones
+    // Eliminamos cualquier marcador previo para evitar duplicaciones
     map.eachLayer((layer) => {
         if (layer instanceof L.CircleMarker) {
             map.removeLayer(layer);
         }
     });
 
-    // Agrega nuevos marcadores solo si los valores son válidos
+    // Agregamos nuevos marcadores solo si los valores son válidos
     data.forEach(item => {
         const lat = item.latitude;
         const lon = item.longitude;
@@ -232,10 +221,10 @@ function updateMap(data) {
             lon !== undefined && !isNaN(lon) &&
             mag !== undefined && !isNaN(mag)
         ) {
-            const radius = Math.log(mag + 1) * 2; // Aplica log solo si mag es válido
+            const radius = Math.log(mag + 1) * 2;
             L.circleMarker([lat, lon], {
                 color: 'red',
-                radius: radius || 2  // Usa un radio por defecto si el cálculo falla
+                radius: radius || 2 
             }).addTo(map).bindPopup(`Magnitud: ${mag}<br>Lugar: ${item.place}`);
         } else {
             console.warn("Datos incompletos o inválidos para el marcador:", item);
