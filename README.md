@@ -1,4 +1,4 @@
-# Lab_DB
+# Lab_DB Omar Cifuentes - Carlos Molina - Joseph Venegas
 
 Asegurese de tener instalado ODBC Driver 17 for SQL Server:
 
