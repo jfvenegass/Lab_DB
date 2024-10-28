@@ -18,10 +18,10 @@
             <nav>
                 <ul class="nav-tabs">
                     <li><button class="tab-button active" data-tab="map">Mapa de Ubicaciones</button></li>
-                    <li><button class="tab-button" data-tab="magnitude">Magnitud vs Tiempo</button></li>
+                    <li><button class="tab-button" data-tab="magnitude">Magnitud vs Fecha</button></li>
                     <li><button class="tab-button" data-tab="distribution">Distribución por País</button></li>
-                    <li><button class="tab-button" data-tab="depth">Análisis de Profundidad</button></li>
-                    <li><button class="tab-button" data-tab="scatter">Profundidad vs Magnitud</button></li>
+                    <li><button class="tab-button" data-tab="depth">Análisis de Tiempo</button></li>
+                    <li><button class="tab-button" data-tab="scatter">Tiempo vs Magnitud</button></li>
                 </ul>
             </nav>
         </div>
@@ -78,22 +78,16 @@
         </div>
 
         <div id="depth-section" class="chart-section">
-            <canvas id="depthHistogramChart" class="chart-container"></canvas>
+            <canvas id="timeAnalysisChart" class="chart-container"></canvas>
         </div>
 
         <div id="scatter-section" class="chart-section">
-            <canvas id="depthMagnitudeScatterChart" class="chart-container"></canvas>
-        </div>
-
-        <div class="statistics-section">
-            <h2>Estadísticas de Magnitud</h2>
-            <button onclick="fetchMagnitudeStats()">Ver Estadísticas</button>
-            <div id="statistics-data"></div>
+            <canvas id="magnitudeVsTimeScatterChart" class="chart-container"></canvas>
         </div>
     </main>
 
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
-    <script src="script.js"></script>
+    <script src="scripts.js"></script>
 
     <!-- Scripts para Leaflet y el archivo personalizado -->
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script> <!-- Leaflet JS -->

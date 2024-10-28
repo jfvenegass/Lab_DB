@@ -6,9 +6,10 @@ let map; // Variable global para la instancia del mapa
 function initializeCharts() {
     if (magnitudeTimeChart) magnitudeTimeChart.destroy();
     if (earthquakeByCountryChart) earthquakeByCountryChart.destroy();
-    if (depthHistogramChart) depthHistogramChart.destroy();
-    if (depthMagnitudeScatterChart) depthMagnitudeScatterChart.destroy();
+    if (depthHistogramChart) depthHistogramChart.destroy(); // este será reemplazado
+    if (depthMagnitudeScatterChart) depthMagnitudeScatterChart.destroy(); // este también será reemplazado
 
+    // Gráfico de línea de magnitud en el tiempo
     magnitudeTimeChart = new Chart(document.getElementById('magnitudeTimeChart').getContext('2d'), {
         type: 'line',
         data: { 
@@ -17,10 +18,12 @@ function initializeCharts() {
         },
         options: { 
             responsive: true, 
-            scales: { x: { beginAtZero: true }, y: { beginAtZero: true } } 
+            scales: { x: { beginAtZero: true, title: { display: true, text: 'Tiempo (ms)' } }, 
+                      y: { beginAtZero: true, title: { display: true, text: 'Magnitud' } } } 
         }
     });
 
+    // Gráfico de barras por país
     earthquakeByCountryChart = new Chart(document.getElementById('earthquakeByCountryChart').getContext('2d'), {
         type: 'bar',
         data: { 
@@ -33,33 +36,61 @@ function initializeCharts() {
         }
     });
 
-    depthHistogramChart = new Chart(document.getElementById('depthHistogramChart').getContext('2d'), {
+    // Nuevo gráfico de análisis de tiempo en milisegundos (histograma de tiempos)
+    timeAnalysisChart = new Chart(document.getElementById('timeAnalysisChart').getContext('2d'), {
         type: 'bar',
         data: { 
             labels: [], 
-            datasets: [{ label: 'Profundidad', data: [], backgroundColor: 'rgba(255, 159, 64, 0.6)' }] 
-        },
-        options: { 
-            responsive: true, 
-            scales: { x: { beginAtZero: true }, y: { beginAtZero: true } } 
-        }
-    });
-
-    depthMagnitudeScatterChart = new Chart(document.getElementById('depthMagnitudeScatterChart').getContext('2d'), {
-        type: 'scatter',
-        data: { 
-            datasets: [{ label: 'Profundidad vs. Magnitud', data: [], backgroundColor: 'rgba(153, 102, 255, 0.6)' }] 
+            datasets: [{
+                label: 'Ocurrencias',
+                data: [],
+                backgroundColor: 'rgba(255, 159, 64, 0.6)'
+            }]
         },
         options: { 
             responsive: true, 
             scales: { 
-                x: { beginAtZero: true, title: { display: true, text: 'Profundidad' } }, 
+                x: { beginAtZero: true, title: { display: true, text: 'Intervalo de tiempo (ms)' } }, 
+                y: { beginAtZero: true, title: { display: true, text: 'Ocurrencias' } }
+            }
+        }
+    });
+
+    // Gráfico de dispersión para magnitud vs tiempo en milisegundos
+    magnitudeVsTimeScatterChart = new Chart(document.getElementById('magnitudeVsTimeScatterChart').getContext('2d'), {
+        type: 'scatter',
+        data: { 
+            datasets: [{ label: 'Magnitud vs. Tiempo (ms)', data: [], backgroundColor: 'rgba(153, 102, 255, 0.6)' }] 
+        },
+        options: { 
+            responsive: true, 
+            scales: { 
+                x: { beginAtZero: true, title: { display: true, text: 'Tiempo (ms)' } }, 
                 y: { beginAtZero: true, title: { display: true, text: 'Magnitud' } } 
             } 
         }
     });
 
     fetchEarthquakeData("2020-01-01", "2023-01-01", "all", "", "");
+}
+
+function updateTimeAnalysisChart(data) {
+    // Agrupa tiempos en intervalos (aquí puedes definir el tamaño del intervalo)
+    const timeCounts = data.reduce((acc, item) => {
+        const timeRange = Math.floor(item.time_ms / 1000000) * 1000000; // Intervalos de 1,000,000 ms
+        acc[timeRange] = (acc[timeRange] || 0) + 1;
+        return acc;
+    }, {});
+
+    timeAnalysisChart.data.labels = Object.keys(timeCounts).map(range => `${range}-${+range + 999999} ms`);
+    timeAnalysisChart.data.datasets[0].data = Object.values(timeCounts);
+    timeAnalysisChart.update();
+}
+
+function updateMagnitudeVsTimeScatterChart(data) {
+    // Pasa los datos de tiempo y magnitud para el gráfico de dispersión
+    magnitudeVsTimeScatterChart.data.datasets[0].data = data.map(item => ({ x: item.time_ms || 0, y: item.magnitude || 0 }));
+    magnitudeVsTimeScatterChart.update();
 }
 
 document.getElementById("filter-form").addEventListener("submit", function(event) {
@@ -89,16 +120,16 @@ function fetchEarthquakeData(startDate, endDate, country, minMagnitude, maxMagni
     }
 
     fetch(url)
-        .then(response => response.json())
-        .then(data => {
-            updateMagnitudeTimeChart(data);
-            updateEarthquakeByCountryChart(data);
-            updateDepthHistogramChart(data);
-            updateDepthMagnitudeScatterChart(data);
-            updateMap(data);
-            displayResults(data);
-        })
-        .catch(error => console.error("Error:", error));
+    .then(response => response.json())
+    .then(data => {
+        updateMagnitudeTimeChart(data);
+        updateEarthquakeByCountryChart(data);
+        updateTimeAnalysisChart(data); // Actualiza el histograma de tiempo
+        updateMagnitudeVsTimeScatterChart(data); // Actualiza el gráfico de magnitud vs tiempo
+        updateMap(data);
+        displayResults(data);
+    })
+    .catch(error => console.error("Error:", error));
 }
 
 function fetchMagnitudeStats() {
@@ -155,11 +186,14 @@ function updateEarthquakeByCountryChart(data) {
 }
 
 function updateDepthHistogramChart(data) {
+    if (data.length === 0) return; // Si no hay datos, mantener valores predeterminados
+
     const depthCounts = data.reduce((acc, item) => {
         const depthRange = Math.floor(item.depth / 10) * 10;
         acc[depthRange] = (acc[depthRange] || 0) + 1;
         return acc;
     }, {});
+
     depthHistogramChart.data.labels = Object.keys(depthCounts).map(range => `${range}-${+range + 9}`);
     depthHistogramChart.data.datasets[0].data = Object.values(depthCounts);
     depthHistogramChart.update();

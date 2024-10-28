@@ -18,9 +18,9 @@ def get_terremotos():
     connection = get_db_connection()
     cursor = connection.cursor()
 
-    # Consulta SQL base sin filtro de fecha
+    # Consulta SQL base que incluye el campo Time_ms
     query = """
-    SELECT Date, Magnitude, Place, Latitude, Longitude
+    SELECT Time_ms, Date, Magnitude, Place, Latitude, Longitude
     FROM Earthquakes_1990_2023
     WHERE Latitude IS NOT NULL AND Longitude IS NOT NULL AND Magnitude IS NOT NULL
     """
@@ -51,6 +51,7 @@ def get_terremotos():
     # Estructura de los datos a enviar al frontend
     data = [
         {
+            "time_ms": row.Time_ms,
             "date": row.Date,
             "magnitude": row.Magnitude,
             "place": row.Place,
@@ -64,7 +65,6 @@ def get_terremotos():
     connection.close()
 
     return jsonify(data)
-
 
 @routes.route('/api/estadisticas/magnitud', methods=['GET'])
 def get_magnitude_stats():
